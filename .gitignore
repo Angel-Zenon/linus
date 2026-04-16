@@ -1,0 +1,14 @@
+# Maven - No subir binarios ni generados
+target/
+
+# NetBeans - Archivos locales de configuración del IDE
+nbproject/private/
+build/
+nbdist/
+dist/
+nbproject/Makefile-*
+nbproject/Package-*
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db

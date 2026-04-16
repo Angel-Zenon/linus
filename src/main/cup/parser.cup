@@ -1,0 +1,36 @@
+package com.mycompany.linus;
+
+import java_cup.runtime.*;
+
+/* -----------------------------------------------------------
+   SECCIÓN DE TERMINALES (Tokens enviados por el Lexer)
+   ----------------------------------------------------------- */
+terminal String PALABRA;
+terminal String NUMERO;
+
+/* -----------------------------------------------------------
+   SECCIÓN DE NO TERMINALES (Estructuras gramaticales)
+   ----------------------------------------------------------- */
+non terminal Object inicio, lista_elementos, elemento;
+
+/* -----------------------------------------------------------
+   REGLAS DE GRAMÁTICA
+   ----------------------------------------------------------- */
+
+// Definimos dónde empieza la gramática
+start with inicio;
+
+inicio ::= lista_elementos
+    {: System.out.println("Sintáctico: El análisis terminó con éxito."); :};
+
+lista_elementos ::= 
+      lista_elementos elemento
+    | elemento
+    ;
+
+elemento ::= 
+      PALABRA:p
+    {: System.out.println("Sintáctico: Reconocí la palabra -> " + p); :}
+    | NUMERO:n
+    {: System.out.println("Sintáctico: Reconocí el número -> " + n); :}
+    ;
