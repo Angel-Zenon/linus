@@ -1,36 +1,23 @@
 package com.mycompany.linus;
-
 import java_cup.runtime.*;
 
-/* -----------------------------------------------------------
-   SECCIÓN DE TERMINALES (Tokens enviados por el Lexer)
-   ----------------------------------------------------------- */
-terminal String PALABRA;
-terminal String NUMERO;
+parser code {:
+    // Código para manejar errores sintácticos
+    public void syntax_error(Symbol s){
+        System.err.println("Error sintáctico en la línea " + (s.left) + " columna " + (s.right) + ". No se esperaba: " + s.value);
+    }
+:};
 
-/* -----------------------------------------------------------
-   SECCIÓN DE NO TERMINALES (Estructuras gramaticales)
-   ----------------------------------------------------------- */
-non terminal Object inicio, lista_elementos, elemento;
+/* Terminales (tokens devueltos por el lexer) */
+terminal PERRO, GATO, PEZ, ASSIGN, EQUALS;
+terminal ID, NUMBER, STRING_LITERAL;
 
-/* -----------------------------------------------------------
-   REGLAS DE GRAMÁTICA
-   ----------------------------------------------------------- */
+/* No terminales (reglas de tu gramática) */
+non terminal program, statement;
 
-// Definimos dónde empieza la gramática
-start with inicio;
+start with program;
 
-inicio ::= lista_elementos
-    {: System.out.println("Sintáctico: El análisis terminó con éxito."); :};
+program ::= statement;
 
-lista_elementos ::= 
-      lista_elementos elemento
-    | elemento
-    ;
-
-elemento ::= 
-      PALABRA:p
-    {: System.out.println("Sintáctico: Reconocí la palabra -> " + p); :}
-    | NUMERO:n
-    {: System.out.println("Sintáctico: Reconocí el número -> " + n); :}
-    ;
+statement ::= PERRO ID ASSIGN NUMBER 
+            | GATO ID ASSIGN STRING_LITERAL;
