@@ -11,7 +11,7 @@ import java.util.List;
 public class Linus {
 
     public static void main(String[] args) {
-        String entrada = "perro valor -> 6;\nperro p1 -> 2;\np1;";
+        String entrada = "perro valor -> 6;\nperro p1e  -> 2;\np1;";
         /* 
         este programa genera una lista de tokens
         cada token contiene su tipo, y su lexema, ademas en la fila en la que se encuentra.
