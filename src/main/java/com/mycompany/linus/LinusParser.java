@@ -2,13 +2,13 @@ package com.mycompany.linus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
+public class LinusParser {
     /*! EN ESTA CLASE CAPTURAREMOS LOS ERRORES SEMANTICOS de nuestro lenguaje */
     List<Token> tokens = new ArrayList<>();
     private int indice = 0;
     private Token tokenActual;
 
-    public Parser(List<Token> tokens ) {
+    public LinusParser(List<Token> tokens ) {
         this.tokens = tokens;
         if (!tokens.isEmpty()) {
             // Si los tokens no estan vacios guardamos el primero coo el Actual
