@@ -36,7 +36,7 @@ public class LexerSimulado {
             "(?<NUM>" + regexNum + ")|" +
             "(?<FIN>" + regexFin + ")|" +
             "(?<SALTO>\\n)"
-        );
+        ); 
         
         Matcher matcher = pattern.matcher(codigo);
 
