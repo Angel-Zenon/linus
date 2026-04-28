@@ -17,8 +17,12 @@ public class Gato implements Operable {
 
     @Override
     public Operable sumar(Operable otro) throws Exception {
-        // En nuestro lenguaje, sumar Gatos es concatenar
-        return new Gato(this.valor + otro.getValor().toString());
+        // Validamos que el otro sea estrictamente un Gato para poder concatenar
+        if (otro instanceof Gato) {
+            return new Gato(this.valor + otro.getValor().toString());
+        } else {
+            throw new Exception("[Error Semántico] No se puede sumar (concatenar) Gato(String) con " + otro.getTipo());
+        }
     }
 
     @Override
