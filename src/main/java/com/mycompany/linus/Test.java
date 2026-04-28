@@ -2,22 +2,33 @@ package com.mycompany.linus;
 
 public class Test {
     public static void main(String[] args) {
-        // Prueba unitaria de la clase Perro
         try {
-            System.out.println("--- Simulando: perro x -> 5 + 10; ---");
+            TablaSimbolos memoria = new TablaSimbolos();
 
-            // 1. El Parser detecta el número 5 y el 10
-            Operable p1 = new Perro(5);
-            Operable p2 = new Perro(10);
+            // SIMULANDO: perro x -> 10;
+            System.out.println("Ejecutando: perro morita -> 10;");
+            memoria.insertar("morita", new Perro(10));
 
-            // 2. El Parser detecta el operador '+' y llama al método del primer operando
-            Operable resultadoSuma = p1.sumar(null);
+            // SIMULANDO: perro y -> x + 5;
+            System.out.println("Ejecutando: perro gua -> morita + 5;");
+            
+            // 1. Buscamos 'x' en la memoria
+            Operable varX = memoria.obtener("morita");
+            
+            if (varX == null) throw new Exception("Error: Variable 'morita' no declarada.");
 
-            // 3. Imprimimos para ver si el polimorfismo funcionó
-            System.out.println("Resultado: " + resultadoSuma.getValor());
-            System.out.println("Tipo resultante: " + resultadoSuma.getTipo());
+            // 2. Realizamos la operación
+            Operable cinco = new Perro(5);
+            Operable resultadoY = varX.sumar(cinco);
+
+            // 3. Guardamos 'y'
+            memoria.insertar("y", resultadoY);
+
+            // Verificamos el estado final
+            memoria.imprimirMemoria();
+
         } catch (Exception e) {
-            System.err.println(e.getLocalizedMessage());
+            System.err.println(e.getMessage());
         }
     }
 }
