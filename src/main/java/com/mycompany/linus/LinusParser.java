@@ -52,8 +52,11 @@ public class LinusParser {
             }
             System.out.println("--- Análisis y Ejecución Terminados con Éxito ---");
             tabla.imprimirMemoria();
+        } catch (LinusSemanticException e) {
+            // Captura específicamente tus errores de tipo/línea
+            System.err.println(e.getMessage());
         } catch (Exception e) {
-            // Imprime el error en la consola de NetBeans
+            // Captura errores sintácticos generales
             System.err.println(e.getMessage());
         }
     }
@@ -147,35 +150,34 @@ public class LinusParser {
         }
 
         Token t = tokenActual;
-        // Si lo que sigue es un punto y coma o un operador sin haber dado un valor
-    
+        int linea = t.getLinea();
 
-        // CASO 1: Es un valor constante (Número o Texto entre comillas)
+        // CASO 1: Es un valor constante (Número o Texto)
         if (t.getTipo() == TipoToken.CONSTANTE) {
             String lexema = t.getLexema();
             avanzar();
-            
+
+            // Ahora usamos los nuevos constructores con validación y línea
             if (lexema.startsWith("\"")) {
-                return new Gato(lexema.replace("\"", ""));
+                return new Gato(lexema.replace("\"", ""), linea);
             } else if (lexema.contains(".")) {
-                return new Pez(Double.parseDouble(lexema));
+                return new Pez(lexema, linea); // El constructor de Pez hará el Double.parseDouble
             } else {
-                return new Perro(Integer.parseInt(lexema));
+                return new Perro(lexema, linea); // El constructor de Perro hará el Integer.parseInt
             }
         } 
-        // CASO 2: Es una variable que ya existe en memoria
+        // CASO 2: Variable existente
         else if (t.getTipo() == TipoToken.IDENTIFICADOR) {
             String nombre = t.getLexema();
             if (!tabla.existe(nombre)) {
-                throw new Exception("[Error Semántico] Fila " + t.getLinea() + 
-                                   ": La variable '" + nombre + "' no ha sido declarada.");
+                throw new LinusSemanticException("La variable '" + nombre + "' no ha sido declarada.", linea);
             }
             avanzar();
             return tabla.obtener(nombre);
         }
 
-        throw new Exception("[Error] Fila " + t.getLinea() + 
-                           ": Se esperaba un valor (número/texto) o variable, pero se encontró '" + t.getLexema() + "'");
+        throw new Exception("[Error] Fila " + linea + 
+                           ": Se esperaba un valor o variable, pero se encontró '" + t.getLexema() + "'");
     }
 
     /**
