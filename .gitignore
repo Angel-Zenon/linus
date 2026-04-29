@@ -12,3 +12,6 @@ nbproject/Package-*
 # Archivos de sistema
 .DS_Store
 Thumbs.db
+
+# Archivos de vscode
+.vscode

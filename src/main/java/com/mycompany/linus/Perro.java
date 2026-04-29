@@ -37,7 +37,7 @@ public class Perro implements Operable{
     }
 
     @Override 
-    public String getTipo() {return "Perro (int)";}
+    public String getTipo() {return "perro";}
 
     @Override
     public Object getValor() {return this.valor;}
