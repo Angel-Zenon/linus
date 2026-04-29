@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.mycompany.linus;
 
 /**
@@ -44,5 +41,5 @@ public class Gato implements Operable {
     public Object getValor() { return this.valor; }
 
     @Override
-    public String getTipo() { return "Gato (String)"; }
+    public String getTipo() { return "Gato"; }
 }

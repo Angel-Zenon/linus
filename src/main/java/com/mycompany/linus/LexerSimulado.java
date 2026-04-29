@@ -22,10 +22,12 @@ public class LexerSimulado {
         // ejemplo: perro resultado -> 10 ;
         String regexTipoDato = "\\b(perro|Gato|pez)\\b"; // perro
         String regexIdentificador   = "\\b[a-z][a-zA-Z0-9]*\\b"; // ejemplo: resultado
+        String regexCadena = "\"[^\"]*\"" ;
         String regexAsignacion = "(->|>>)"; // ->
-        String regexNum  = "\\b\\d+\\b"; // 10 
+        String regexNum  = "\\d+(\\.\\d+)?"; // 10 
+        String regexOp   = "[\\+\\-\\*/]"; 
         String regexFin  = ";"; // ;
-        //! queda pendiende lo de los comentarios
+        //! queda pendiende lo de los comentarios y operaciones
         
         // Se unen las expresiones regulaes en un solo patron
         // explicar en la documentacion del proyeto que es un patron (pattern) en regex de java
@@ -33,7 +35,9 @@ public class LexerSimulado {
             "(?<TIPODATO>" + regexTipoDato + ")|" +
             "(?<ID>" + regexIdentificador + ")|" +
             "(?<ASIG>" + regexAsignacion + ")|" +
+            "(?<STR>" + regexCadena + ")|" +  
             "(?<NUM>" + regexNum + ")|" +
+            "(?<OP>" + regexOp + ")|" +  
             "(?<FIN>" + regexFin + ")|" +
             "(?<SALTO>\\n)"
         ); 
@@ -52,9 +56,12 @@ public class LexerSimulado {
                 tokens.add(new Token(TipoToken.IDENTIFICADOR, matcher.group(), numLinea));
             else if (matcher.group("ASIG") != null) 
                 tokens.add(new Token(TipoToken.OPERADOR, matcher.group(), numLinea));
-            
+            else if (matcher.group("STR") != null) 
+                tokens.add(new Token(TipoToken.CONSTANTE, matcher.group(), numLinea));
             else if (matcher.group("NUM") != null) 
                 tokens.add(new Token(TipoToken.CONSTANTE, matcher.group(), numLinea));
+            else if (matcher.group("OP") != null)
+            tokens.add(new Token(TipoToken.OPERADOR, matcher.group(), numLinea));
             else if (matcher.group("FIN") != null) 
                 tokens.add(new Token(TipoToken.FIN_SENTENCIA, matcher.group(), numLinea));
         }

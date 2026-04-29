@@ -11,15 +11,21 @@ import java.util.List;
 public class Linus {
 
     public static void main(String[] args) {
-        String entrada = "perro valor -> 6;\nperro p1e  -> 2;\np1;";
-        /* 
-        este programa genera una lista de tokens
-        cada token contiene su tipo, y su lexema, ademas en la fila en la que se encuentra.
+
+        // String codigo = "Gato nombre -> \"Ángel \";\n" +
+        //             "Gato apellido -> \"Zenón\";\n" +
+        //             "Gato completo -> nombre + apellido;";
+
+        String codigo = "perro x -> 2 + 3 * 4;";
+        try {
+            System.out.println("FASE 1  IDENTIFICANDO Y  CLASIFICANDO LOS TOKENS");
+            List<Token> tokens = LexerSimulado.analizarTokens(codigo);
+            tokens.forEach(System.out::println);
+            System.out.println("FASE 2 Analizando cada token");
+            LinusParser parser = new LinusParser(tokens);
+            parser.analizar();
+        } catch (Exception e) { System.err.println(e.getLocalizedMessage());}
+
         
-        mediante la clase LexerSimulado, ejecuta una funcion con las instrucciones del nuevo lenguaje
-        */
-        
-        List<Token> lista = LexerSimulado.analizarTokens(entrada);
-        lista.forEach(System.out::println);
     }
 }

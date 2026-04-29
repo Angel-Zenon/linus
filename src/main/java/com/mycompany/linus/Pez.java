@@ -52,5 +52,5 @@ public class Pez implements Operable {
     public Object getValor() { return this.valor; }
 
     @Override
-    public String getTipo() { return "Pez (double)"; }
+    public String getTipo() { return "pez"; }
 }
