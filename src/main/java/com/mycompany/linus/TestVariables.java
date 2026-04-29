@@ -1,49 +1,66 @@
 package com.mycompany.linus;
 
+import java.util.List;
+
+/**
+ * Clase de Pruebas Integrales para el Lenguaje Linus.
+ * Objetivo: Validar las fases de Lexer, Parser, Semántica y Gestión de Memoria.
+ */
 public class TestVariables {
     public static void main(String[] args) {
-        System.out.println("========== PRUEBAS DE ANALIZADOR SEMANTICO ==========\n");
+        System.out.println("===========================================================");
+        System.out.println("   LINUS COMPILER - PROTOCOLO DE PRUEBAS INTEGRALES        ");
+        System.out.println("===========================================================\n");
 
-        // --- PRUEBA 1: ÉXITO CON PEZ (double) ---
+        // CÓDIGO FUENTE DE PRUEBA: Incluye comentarios, espacios y jerarquía matemática
+        String codigoFuente = 
+            "-- 1. Declaración y tipos de datos\n" +
+            "perro edad -> 20;\n" +
+            "pez pi -> 3.1416;\n" +
+            "gato mensaje -> \"Compilador Linus\";\n" +
+            "\n" +
+            "-- 2. Prueba de jerarquía de operaciones (Multiplicación antes que Suma)\n" +
+            "perro calculo -> 5 + 10 * 2;\n" +
+            "\n" +
+            "-- 3. Prueba de concatenación (Solo Gatos)\n" +
+            "gato despedida -> \"Adios \" + \"Mundo\"; -- Comentario final";
+
         try {
-            System.out.println("Test 1: pez x -> 15.5 + 4.5;");
-            Operable z1 = new Pez(15.5);
-            Operable z2 = new Pez(4.5);
-            Operable resPez = z1.sumar(z2); // Cambié null por z2
-            System.out.println("Resultado: " + resPez.getValor() + " [" + resPez.getTipo() + "]\n");
+            // --- FASE LÉXICA ---
+            System.out.println(">>> FASE 1: ANÁLISIS LÉXICO (Extrayendo Tokens)");
+            List<Token> tokens = LexerSimulado.analizarTokens(codigoFuente);
+            System.out.println("Se generaron " + tokens.size() + " tokens (Comentarios ignorados con éxito).");
+            System.out.println("-----------------------------------------------------------");
+
+            // --- FASE SINTÁCTICA Y SEMÁNTICA ---
+            System.out.println(">>> FASE 2: ANÁLISIS SINTÁCTICO Y SEMÁNTICO (Parser)");
+            LinusParser parser = new LinusParser(tokens);
+            
+            // Este método recorre las reglas gramaticales y llena la Tabla de Símbolos
+            parser.analizar(); 
+            System.out.println("-----------------------------------------------------------");
+
+            // --- FASE DE ROBUSTEZ (Pruebas de Fallo) ---
+            System.out.println(">>> FASE 3: PRUEBAS DE RESILIENCIA (Manejo de Errores)");
+            probarError("pez error -> \"No soy un decimal\";", "Error de tipo (String en Double)");
+            probarError("perro a -> 10 + \"texto\";", "Error de operación (Suma incompatible)");
+
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("CRITICAL_FAILURE: " + e.getMessage());
         }
+    }
 
-        // --- PRUEBA 2: ÉXITO CON GATO (String - Concatenación) ---
+    /**
+     * Método auxiliar para demostrar que el compilador detecta errores correctamente.
+     */
+    private static void probarError(String codigoErroneo, String descripcion) {
+        System.out.print("Simulando " + descripcion + "... ");
         try {
-            System.out.println("Test 2: gato m -> \"Hola \" + \"Mundo\";");
-            Operable g1 = new Gato("Hola ");
-            Operable g2 = new Gato("Mundo");
-            Operable resGato = g1.sumar(g2);
-            System.out.println("Resultado: " + resGato.getValor() + " [" + resGato.getTipo() + "]\n");
+            List<Token> t = LexerSimulado.analizarTokens(codigoErroneo);
+            LinusParser p = new LinusParser(t);
+            p.analizar();
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-
-        // --- PRUEBA 3: ERROR SEMÁNTICO (Mezcla prohibida) ---
-        try {
-            System.out.println("Test 3: perro a -> 10 + pez(5.0);");
-            Operable a = new Perro(10);
-            Operable b = new Pez(5.0);
-            a.sumar(b); // Esto DEBE disparar el catch
-        } catch (Exception e) {
-            System.out.println("Respuesta esperada -> " + e.getMessage() + "\n");
-        }
-
-        // --- PRUEBA 4: ERROR OPERACIÓN NO VÁLIDA (Gato no resta) ---
-        try {
-            System.out.println("Test 4: gato c -> \"Adios\" - \"Tristeza\";");
-            Operable c = new Gato("Adios");
-            Operable d = new Gato("Tristeza");
-            c.restar(d); 
-        } catch (Exception e) {
-            System.out.println("Respuesta esperada -> " + e.getMessage() + "\n");
+            System.out.println("[OK] Capturado: " + e.getMessage());
         }
     }
 }

@@ -1,72 +1,72 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.linus;
+
 import java.util.ArrayList;
 import java.util.List;
- // Importamos las expresiones regulares
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class LexerSimulado {
-    
-    public static  List<Token> analizarTokens(String codigo) {
-        // esta funcion recibe una cadena de texto, la cual es el codigó del lenguaje linus
-        // crea una lista de tokens e inicializamos la linea en 1
+
+    public static List<Token> analizarTokens(String codigo) {
         List<Token> tokens = new ArrayList<>();
         int numLinea = 1;
-        
-        // Definicion de las esprecuiones regulares para analizar los tokens
-        // ejemplo: perro resultado -> 10 ;
-        String regexTipoDato = "\\b(perro|Gato|pez)\\b"; // perro
-        String regexIdentificador   = "\\b[a-z][a-zA-Z0-9]*\\b"; // ejemplo: resultado
-        String regexCadena = "\"[^\"]*\"" ;
-        String regexAsignacion = "(->|>>)"; // ->
-        String regexNum  = "\\d+(\\.\\d+)?"; // 10 
-        String regexOp   = "[\\+\\-\\*/]"; 
-        String regexFin  = ";"; // ;
-        //! queda pendiende lo de los comentarios y operaciones
-        
-        // Se unen las expresiones regulaes en un solo patron
-        // explicar en la documentacion del proyeto que es un patron (pattern) en regex de java
+
+        // 1. Definición de las expresiones regulares
+        // Agregamos regexComentario: busca -- y todo lo que sigue hasta el final de la línea
+        String regexComentario = "--.*"; 
+        String regexTipoDato = "\\b(perro|gato|pez)\\b"; 
+        String regexIdentificador = "\\b[a-z][a-zA-Z0-9]*\\b"; 
+        String regexCadena = "\"[^\"]*\"";
+        String regexAsignacion = "(->|>>)";
+        String regexNum = "\\d+(\\.\\d+)?";
+        String regexOp = "[\\+\\-\\*/]";
+        String regexFin = ";";
+
+        // 2. Unión de patrones (El comentario va PRIMERO para evitar conflictos con el operador '-')
         Pattern pattern = Pattern.compile(
+            "(?<COMMENT>" + regexComentario + ")|" +
             "(?<TIPODATO>" + regexTipoDato + ")|" +
             "(?<ID>" + regexIdentificador + ")|" +
             "(?<ASIG>" + regexAsignacion + ")|" +
-            "(?<STR>" + regexCadena + ")|" +  
+            "(?<STR>" + regexCadena + ")|" +
             "(?<NUM>" + regexNum + ")|" +
-            "(?<OP>" + regexOp + ")|" +  
+            "(?<OP>" + regexOp + ")|" +
             "(?<FIN>" + regexFin + ")|" +
             "(?<SALTO>\\n)"
-        ); 
-        
+        );
+
         Matcher matcher = pattern.matcher(codigo);
 
         while (matcher.find()) {
+            // Manejo de Salto de Línea
             if (matcher.group("SALTO") != null) {
                 numLinea++;
                 continue;
             }
-            // explicar esta parte del codigo 
-            if (matcher.group("TIPODATO") != null) 
+
+            // Manejo de Comentarios: Los detectamos pero NO agregamos nada a la lista de tokens
+            if (matcher.group("COMMENT") != null) {
+                // Al usar 'continue', saltamos al siguiente hallazgo sin crear un Token
+                continue; 
+            }
+
+            // Clasificación de Tokens Reales
+            if (matcher.group("TIPODATO") != null)
                 tokens.add(new Token(TipoToken.PALABRA_RESERVADA, matcher.group(), numLinea));
-            else if (matcher.group("ID") != null) 
+            else if (matcher.group("ID") != null)
                 tokens.add(new Token(TipoToken.IDENTIFICADOR, matcher.group(), numLinea));
-            else if (matcher.group("ASIG") != null) 
+            else if (matcher.group("ASIG") != null)
                 tokens.add(new Token(TipoToken.OPERADOR, matcher.group(), numLinea));
-            else if (matcher.group("STR") != null) 
+            else if (matcher.group("STR") != null)
                 tokens.add(new Token(TipoToken.CONSTANTE, matcher.group(), numLinea));
-            else if (matcher.group("NUM") != null) 
+            else if (matcher.group("NUM") != null)
                 tokens.add(new Token(TipoToken.CONSTANTE, matcher.group(), numLinea));
             else if (matcher.group("OP") != null)
-            tokens.add(new Token(TipoToken.OPERADOR, matcher.group(), numLinea));
-            else if (matcher.group("FIN") != null) 
+                tokens.add(new Token(TipoToken.OPERADOR, matcher.group(), numLinea));
+            else if (matcher.group("FIN") != null)
                 tokens.add(new Token(TipoToken.FIN_SENTENCIA, matcher.group(), numLinea));
         }
-        
+
         return tokens;
     }
-    
 }
