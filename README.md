@@ -1,16 +1,42 @@
 # Lenguaje-Linus
-Analizador léxico y sintáctico para la implementación de un lenguaje de programación
 
-# Diccionario de tokens
-| Clase original   | Clase en linus |
-| -------------    | ------------- |
-| Entero (int)     | perro  |
-| Cadena (String)  | Gato  |
-| Decimal (double) | pez  |
-| // (comentario)  | -- |
-| = | ->|
-| == | >> |
-| Operadores | +, - , * , / |
+> Analizador lexico y sintactico para la implementacion de un lenguaje de programacion personalizado.
+
+---
+
+## Descripcion del Proyecto
+
+**Linus** es un lenguaje de programacion disenado e implementado por nuestro equipo como proyecto academico. El objetivo principal es construir un compilador funcional que incluya analisis lexico, sintactico y semantico, utilizando herramientas profesionales como **JFlex** y **Java CUP**.
+
+El lenguaje utiliza una sintaxis unica y creativa, donde los tipos de datos tradicionales son reemplazados por nombres de animales, haciendo el aprendizaje mas amigable y divertido.
+
+---
+
+## Tecnologias Utilizadas
+
+| Tecnologia | Descripcion |
+|------------|-------------|
+| **Java 23** | Lenguaje base del compilador |
+| **JFlex** | Generador de analizadores lexicos |
+| **Java CUP** | Generador de parsers LALR |
+| **Maven** | Gestor de dependencias y construccion |
+
+---
+
+## Diccionario de Tokens
+
+Nuestro lenguaje reemplaza las palabras reservadas tradicionales por terminos mas creativos:
+
+| Tipo Original | Palabra en Linus | Descripcion |
+|---------------|------------------|-------------|
+| `int` | `perro` | Tipo de dato entero |
+| `String` | `gato` | Tipo de dato cadena de texto |
+| `double` | `pez` | Tipo de dato decimal |
+| `//` | `--` | Comentario de linea |
+| `=` | `->` | Operador de asignacion |
+| `==` | `>>` | Operador de igualdad |
+| `+`, `-`, `*`, `/` | `+`, `-`, `*`, `/` | Operadores aritmeticos |
+
 
 ## Ejemplo de un proceso de Linus
 
