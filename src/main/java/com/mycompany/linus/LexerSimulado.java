@@ -65,6 +65,8 @@ public class LexerSimulado {
                 tokens.add(new Token(TipoToken.OPERADOR, matcher.group(), numLinea));
             else if (matcher.group("FIN") != null)
                 tokens.add(new Token(TipoToken.FIN_SENTENCIA, matcher.group(), numLinea));
+            else 
+                tokens.add(new Token(TipoToken.ERROR, matcher.group(), numLinea));
         }
 
         return tokens;

@@ -33,6 +33,7 @@ public class LinusParser {
     }
 
     private void consumir(TipoToken tipoEsperado) throws Exception {
+
         if (tokenActual != null && tokenActual.getTipo() == tipoEsperado) {
             avanzar();
         } else {
@@ -66,23 +67,26 @@ public class LinusParser {
      */
     private void sentencia() throws Exception {
         if (tokenActual == null) return;
+        // si el token actual es un error, lo consumimos y lanzamos un error
+       
 
         if (tokenActual.getTipo() == TipoToken.PALABRA_RESERVADA) {
             String tipoDato = tokenActual.getLexema(); // perro, gato o pez
             consumir(TipoToken.PALABRA_RESERVADA);
             
             String nombreVar = tokenActual.getLexema();
-consumir(TipoToken.IDENTIFICADOR);
+            consumir(TipoToken.IDENTIFICADOR);
+            
+            
+            //Validar que la variable no exista ya
+            if (tabla.existe(nombreVar)) {
+                throw new LinusSemanticException(
+                    "La variable '" + nombreVar + "' ya ha sido declarada previamente.", 
+                    tokenActual.getLinea()
+                );
+            }
 
-//Validar que la variable no exista ya
-if (tabla.existe(nombreVar)) {
-    throw new LinusSemanticException(
-        "La variable '" + nombreVar + "' ya ha sido declarada previamente.", 
-        tokenActual.getLinea()
-    );
-}
-
-consumir(TipoToken.OPERADOR); // Consume "->" o ">>"
+            consumir(TipoToken.OPERADOR); // Consume "->" o ">>"
             
             // Resolvemos la expresión (puede ser un valor simple o una suma)
             Operable resultado = expresion();
