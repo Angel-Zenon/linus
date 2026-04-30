@@ -72,9 +72,17 @@ public class LinusParser {
             consumir(TipoToken.PALABRA_RESERVADA);
             
             String nombreVar = tokenActual.getLexema();
-            consumir(TipoToken.IDENTIFICADOR);
-            
-            consumir(TipoToken.OPERADOR); // Consume "->" o ">>"
+consumir(TipoToken.IDENTIFICADOR);
+
+//Validar que la variable no exista ya
+if (tabla.existe(nombreVar)) {
+    throw new LinusSemanticException(
+        "La variable '" + nombreVar + "' ya ha sido declarada previamente.", 
+        tokenActual.getLinea()
+    );
+}
+
+consumir(TipoToken.OPERADOR); // Consume "->" o ">>"
             
             // Resolvemos la expresión (puede ser un valor simple o una suma)
             Operable resultado = expresion();
