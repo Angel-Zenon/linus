@@ -1,11 +1,11 @@
 package com.mycompany.linus;
 
-
 import java.util.List;
 
 /**
  * Analizador Sintáctico y Semántico para el lenguaje "Linus".
- * Implementa la lógica de Descenso Recurrente simulando el comportamiento de CUP.
+ * Implementa la lógica de Descenso Recurrente simulando el comportamiento de
+ * CUP.
  */
 public class LinusParser {
     private List<Token> tokens;
@@ -38,9 +38,10 @@ public class LinusParser {
             avanzar();
         } else {
             String encontrado = (tokenActual != null) ? tokenActual.getLexema() : "FIN DE ARCHIVO";
-            int linea = (tokenActual != null) ? tokenActual.getLinea() : (tokens.isEmpty() ? 0 : tokens.get(tokens.size() - 1).getLinea());
-            throw new Exception("[Error Sintáctico] Fila " + linea + 
-                               ": Se esperaba " + tipoEsperado + " pero se encontró '" + encontrado + "'");
+            int linea = (tokenActual != null) ? tokenActual.getLinea()
+                    : (tokens.isEmpty() ? 0 : tokens.get(tokens.size() - 1).getLinea());
+            throw new Exception("[Error Sintáctico] Fila " + linea +
+                    ": Se esperaba " + tipoEsperado + " pero se encontró '" + encontrado + "'");
         }
     }
 
@@ -66,63 +67,89 @@ public class LinusParser {
      * REGLA: sentencia ::= TIPO_DATO ID ASIGNACION expresion FIN_SENTENCIA
      */
     private void sentencia() throws Exception {
-        if (tokenActual == null) return;
+        if (tokenActual == null)
+            return;
         // si el token actual es un error, lo consumimos y lanzamos un error
-       
 
         if (tokenActual.getTipo() == TipoToken.PALABRA_RESERVADA) {
             String tipoDato = tokenActual.getLexema(); // perro, gato o pez
             consumir(TipoToken.PALABRA_RESERVADA);
-            
+
             String nombreVar = tokenActual.getLexema();
             consumir(TipoToken.IDENTIFICADOR);
-            
-            
-            //Validar que la variable no exista ya
+            // Validar que la variable no exista ya
             if (tabla.existe(nombreVar)) {
                 throw new LinusSemanticException(
-                    "La variable '" + nombreVar + "' ya ha sido declarada previamente.", 
-                    tokenActual.getLinea()
-                );
+                        "La variable '" + nombreVar + "' ya ha sido declarada previamente.",
+                        tokenActual.getLinea());
             }
-
             consumir(TipoToken.OPERADOR); // Consume "->" o ">>"
-            
             // Resolvemos la expresión (puede ser un valor simple o una suma)
             Operable resultado = expresion();
-            
+
             // VALIDACIÓN SEMÁNTICA: ¿El objeto coincide con el tipo de la variable?
             validarTipo(tipoDato, resultado);
-            
+
             // Guardamos en la memoria (Tabla de Símbolos)
             tabla.insertar(nombreVar, resultado);
-            
+
             consumir(TipoToken.FIN_SENTENCIA); // Consume ";"
-        } else {
-            throw new Exception("[Error Sintáctico] Fila " + tokenActual.getLinea() + 
-                               ": La instrucción debe iniciar con una declaración (perro/gato/pez). Encontrado: '" + tokenActual.getLexema() + "'");
+        } // CASO 2: Reasignación (edad -> edad + otra;) <--- ESTO ES LO QUE FALTA
+        else if (tokenActual.getTipo() == TipoToken.IDENTIFICADOR) {
+            String nombreVar = tokenActual.getLexema();
+            
+            // Verificamos que la variable ya exista en memoria
+            if (!tabla.existe(nombreVar)) {
+                throw new Exception("[Error Semántico] Fila " + tokenActual.getLinea() + 
+                                ": La variable '" + nombreVar + "' no ha sido declarada.");
+            }
+            
+            // Guardamos el tipo original para no permitir meter un Gato en un Perro
+            String tipoOriginal = tabla.obtener(nombreVar).getTipo().toLowerCase();
+            
+            consumir(TipoToken.IDENTIFICADOR); // Consumimos el nombre (edad)
+            consumir(TipoToken.OPERADOR);      // Consumimos la asignación (->)
+            
+            Operable nuevoValor = expresion(); 
+            
+            // Validación de tipos en la reasignación
+            if (!nuevoValor.getTipo().toLowerCase().contains(tipoOriginal.split(" ")[0])) {
+                throw new Exception("[Error de Tipos] No puedes reasignar un " + nuevoValor.getTipo() + " a la variable '" + nombreVar + "' que es " + tipoOriginal);
+            }
+            
+            tabla.insertar(nombreVar, nuevoValor); // Actualizamos el valor en memoria
+            consumir(TipoToken.FIN_SENTENCIA);     // Consumimos el ";"
+        } 
+        
+        else {
+            throw new Exception("[Error] Fila " + tokenActual.getLinea() + 
+                            ": Instrucción no válida.");
         }
-    }
+        }
 
     /**
      * REGLA: expresion ::= factor ( OPERADOR_SUMA factor )*
      */
     private Operable expresion() throws Exception {
         // Primero resolvemos lo que tenga mayor prioridad (términos)
-        Operable izq = termino(); 
-        
+        Operable izq = termino();
+
         while (tokenActual != null && (tokenActual.getLexema().equals("+") || tokenActual.getLexema().equals("-"))) {
             String operador = tokenActual.getLexema();
             consumir(TipoToken.OPERADOR);
-            
+
             validarOperandoFaltante(); // Blindaje de seguridad
-            
+
             Operable der = termino(); // Resolvemos el siguiente bloque
-            
+
             // El Switch para decidir la operación
             switch (operador) {
-                case "+": izq = izq.sumar(der); break;
-                case "-": izq = izq.restar(der); break;
+                case "+":
+                    izq = izq.sumar(der);
+                    break;
+                case "-":
+                    izq = izq.restar(der);
+                    break;
             }
         }
         return izq;
@@ -130,28 +157,32 @@ public class LinusParser {
 
     private Operable termino() throws Exception {
         Operable izq = factor(); // Llegamos a la base (número o variable)
-        
+
         while (tokenActual != null && (tokenActual.getLexema().equals("*") || tokenActual.getLexema().equals("/"))) {
             String operador = tokenActual.getLexema();
             consumir(TipoToken.OPERADOR);
-            
+
             validarOperandoFaltante();
-            
+
             Operable der = factor();
-            
+
             switch (operador) {
-                case "*": izq = izq.multiplicar(der); break;
-                case "/": izq = izq.dividir(der); break;
+                case "*":
+                    izq = izq.multiplicar(der);
+                    break;
+                case "/":
+                    izq = izq.dividir(der);
+                    break;
             }
         }
         return izq;
     }
 
     private void validarOperandoFaltante() throws Exception {
-    if (tokenActual == null || tokenActual.getTipo() == TipoToken.FIN_SENTENCIA) {
-        throw new Exception("[Error Sintáctico] Falta un operando después del operador.");
+        if (tokenActual == null || tokenActual.getTipo() == TipoToken.FIN_SENTENCIA) {
+            throw new Exception("[Error Sintáctico] Falta un operando después del operador.");
+        }
     }
-}
 
     /**
      * REGLA: factor ::= NUMERO | STRING | IDENTIFICADOR
@@ -177,7 +208,7 @@ public class LinusParser {
             } else {
                 return new Perro(lexema, linea); // El constructor de Perro hará el Integer.parseInt
             }
-        } 
+        }
         // CASO 2: Variable existente
         else if (t.getTipo() == TipoToken.IDENTIFICADOR) {
             String nombre = t.getLexema();
@@ -188,21 +219,23 @@ public class LinusParser {
             return tabla.obtener(nombre);
         }
 
-        throw new Exception("[Error] Fila " + linea + 
-                           ": Se esperaba un valor o variable, pero se encontró '" + t.getLexema() + "'");
+        throw new Exception("[Error] Fila " + linea +
+                ": Se esperaba un valor o variable, pero se encontró '" + t.getLexema() + "'");
     }
 
     /**
-     * Verifica que el objeto generado sea compatible con la palabra reservada usada.
+     * Verifica que el objeto generado sea compatible con la palabra reservada
+     * usada.
      */
     private void validarTipo(String tipoDeclarado, Operable objeto) throws Exception {
-        String tipoObjeto = objeto.getTipo(); 
-        
-        // Comparamos si el tipo del objeto contiene la palabra reservada (ej: "Perro (int)" contiene "perro")
+        String tipoObjeto = objeto.getTipo();
+
+        // Comparamos si el tipo del objeto contiene la palabra reservada (ej: "Perro
+        // (int)" contiene "perro")
         if (!tipoObjeto.contains(tipoDeclarado)) {
-            throw new Exception("[Error de Tipos] Fila " + (tokenActual != null ? tokenActual.getLinea() : "actual") + 
-                               ": No se puede asignar un " + objeto.getTipo() + 
-                               " a una variable declarada como '" + tipoDeclarado + "'");
+            throw new Exception("[Error de Tipos] Fila " + (tokenActual != null ? tokenActual.getLinea() : "actual") +
+                    ": No se puede asignar un " + objeto.getTipo() +
+                    " a una variable declarada como '" + tipoDeclarado + "'");
         }
     }
 }
