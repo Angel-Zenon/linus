@@ -147,7 +147,9 @@ public class LinusFrame extends JFrame {
                 String tipoStr = t.getTipo().name();
                 String lexema = t.getLexema();
                 String patron = obtenerPatron(t.getTipo());
-                String reservada = (t.getTipo() == TipoToken.PALABRA_RESERVADA) ? "Sí" : "No";
+                String reservada = (t.getTipo() == TipoToken.PALABRA_RESERVADA || 
+                                    t.getTipo() == TipoToken.OPERADOR || 
+                                    t.getTipo() == TipoToken.FIN_SENTENCIA) ? "Sí" : "No";
                 modeloTabla.addRow(new Object[]{tipoStr, lexema, patron, reservada});
             }
 
