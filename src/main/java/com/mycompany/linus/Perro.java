@@ -5,14 +5,27 @@ package com.mycompany.linus;
  */
 public class Perro implements Operable {
     private int valor;
+    private static final int MAX_DIGITOS = 10;
 
-    // Nuevo constructor para validar la entrada desde el Parser
+    // Constructor con validación desde el Parser
     public Perro(Object valorInput, int linea) throws LinusSemanticException {
         try {
-            // Intentamos convertir el valor recibido a un entero (int)
-            this.valor = Integer.parseInt(valorInput.toString());
+            String strValor = valorInput.toString();
+            
+            // Validar límite de dígitos
+            if (strValor.replace("-", "").length() > MAX_DIGITOS) {
+                throw new LinusSemanticException(
+                    "El entero '" + strValor + "' excede el límite de " + MAX_DIGITOS + " dígitos.", 
+                    linea
+                );
+            }
+            
+            this.valor = Integer.parseInt(strValor);
         } catch (NumberFormatException | NullPointerException e) {
-            throw new LinusSemanticException("El tipo 'perro' (int) no puede recibir el valor: " + valorInput, linea);
+            throw new LinusSemanticException(
+                "El tipo 'perro' (int) no puede recibir el valor: " + valorInput, 
+                linea
+            );
         }
     }
 

@@ -219,8 +219,11 @@ public class LinusParser {
             return tabla.obtener(nombre);
         }
 
-        throw new Exception("[Error] Fila " + linea +
-                ": Se esperaba un valor o variable, pero se encontró '" + t.getLexema() + "'");
+        String mensaje = "Se esperaba un valor o variable, pero se encontró '" + t.getLexema() + "'.";
+if (t.getLexema().matches("\\d+.*")) {
+    mensaje += " Verifique los límites: 10 dígitos para enteros, 7 decimales para pez.";
+}
+throw new Exception("[Error] Fila " + linea + ": " + mensaje);
     }
 
     /**

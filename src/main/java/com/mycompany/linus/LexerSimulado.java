@@ -18,7 +18,7 @@ public class LexerSimulado {
         String regexIdentificador = "\\b[a-z][a-zA-Z0-9]*\\b"; 
         String regexCadena = "\"[^\"]*\"";
         String regexAsignacion = "(->|>>)";
-        String regexNum = "\\b\\d{1,10}(\\.\\d{1,8})?\\b";  
+        String regexNum = "\\d+(\\.\\d+)?";
         String regexOp = "[\\+\\-\\*/]";
         String regexFin = ";";
 

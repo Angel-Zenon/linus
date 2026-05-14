@@ -1,16 +1,27 @@
 package com.mycompany.linus;
 
 /**
- * * @author irvin
+ * @author irvin
  */
 public class Pez implements Operable {
     private double valor;
+    private static final int MAX_DECIMALES = 7;
 
-    // Constructor corregido para validar la entrada y reportar la línea del error
+    // Constructor con validación desde el Parser
     public Pez(Object valorInput, int linea) throws LinusSemanticException {
         try {
-            // Intentamos convertir lo que reciba el Parser a un double real
-            this.valor = Double.parseDouble(valorInput.toString());
+            String strValor = valorInput.toString();
+            
+            //Validar límite de decimales
+            String[] partes = strValor.split("\\.");
+            if (partes.length == 2 && partes[1].length() > MAX_DECIMALES) {
+                throw new LinusSemanticException(
+                    "El decimal '" + strValor + "' excede el límite de " + MAX_DECIMALES + " decimales.", 
+                    linea
+                );
+            }
+            
+            this.valor = Double.parseDouble(strValor);
         } catch (NumberFormatException | NullPointerException e) {
             throw new LinusSemanticException("El tipo 'pez' (double) no puede recibir el valor: " + valorInput, linea);
         }
